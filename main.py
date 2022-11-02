@@ -2,6 +2,7 @@ import findspark
 
 findspark.init()
 
+
 import pyspark
 import pytest
 import logging
