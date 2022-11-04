@@ -1,18 +1,10 @@
+# Importing libraries
 import findspark
-
 findspark.init()
-
-
-import pyspark
-import pytest
-import logging
 from chispa.column_comparer import assert_column_equality
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
-from pyspark.sql.types import StructType, StructField
-from pyspark.sql.types import StringType, IntegerType, ArrayType
 from pyspark.sql.functions import col
-from pyspark.sql.functions import array_contains
 
 # spark = SparkSession.builder.getOrCreate()
 
@@ -21,15 +13,19 @@ spark = (SparkSession.builder
          .appName("BTC-pyspark-analysis")
          .getOrCreate())
 
-# logging.basicConfig(filename="run.log", level=logging.info(), format='%(asctime)s:%(levelname)s:%(message)s')
+# Setting up PySpark logging
+sc = spark.sparkContext
+log4jLogger = sc._jvm.org.apache.log4j
+logger = log4jLogger.LogManager.getLogger(__name__)
+spark.sparkContext.setLogLevel("INFO")
+logger.info("pyspark logger initialized")
+# print(logger.handlers)
 
 # The CSV dataset is pointed to by the path1 and path2 variables.
 path1 = "dataset_one.csv"
 path2 = "dataset_two.csv"
 df1 = spark.read.option("delimiter", ",").option("header", True).csv(path1)
 df2 = spark.read.option("delimiter", ",").option("header", True).csv(path2)
-# df1 = spark.read.csv(path1, header="True")
-
 
 # Excluding the email column
 df1 = df1.drop("email")
